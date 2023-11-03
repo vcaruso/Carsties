@@ -7,7 +7,7 @@ import Input from '../components/Input';
 import DateInput from '../components/DateInput';
 import { createAuction, updateAuction, updateAuctionTest } from '../actions/auctionActions';
 import { usePathname, useRouter } from 'next/navigation';
-import toast from 'react-hot-toast/headless';
+import toast from 'react-hot-toast';
 import { Auction } from '@/types';
 
 
@@ -73,8 +73,10 @@ export default function AuctionForm({auction}: Props) {
                     rules={{ required: 'Mileage is required' }} />
             </div>
 
+            
             {
-                pathname === 'auctions/create' && 
+                
+                pathname === '/auctions/create' && 
             
 
                 <>
