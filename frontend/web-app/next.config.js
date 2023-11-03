@@ -5,7 +5,9 @@ const nextConfig = {
     },
     images: {
         domains: [
-            'cdn.pixabay.com'
+            'cdn.pixabay.com',
+            'www.google.com',
+            'azzurracenter.it'
         ]
     }
 
