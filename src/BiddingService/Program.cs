@@ -1,5 +1,6 @@
 using BiddingService;
 using MassTransit;
+using MassTransit.Futures;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MongoDB.Driver;
 using MongoDB.Entities;
@@ -43,6 +44,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddHostedService<CheckAuctionFinished>();
 
 var app = builder.Build();
 
