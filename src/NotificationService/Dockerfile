@@ -23,14 +23,22 @@ COPY src/Contracts/Contracts.csproj src/Contracts/Contracts.csproj
 
 COPY src/IdentityService/IdentityService.csproj src/IdentityService/IdentityService.csproj
 
+
+
+
+
+
+
 # Restore package deps
 RUN dotnet restore Carsties.sln
 
 # Copy the app folders
 
-COPY src/GatewayService src/GatewayService
+COPY src/NotificationService src/NotificationService
 
-WORKDIR /app/src/GatewayService
+COPY src/Contracts src/Contracts
+
+WORKDIR /app/src/NotificationService
 
 RUN dotnet publish -c Release -o /app/src/out
 
@@ -41,4 +49,5 @@ WORKDIR /app
 
 COPY --from=build /app/src/out .
 
-ENTRYPOINT [ "dotnet", "GatewayService.dll" ]
+ENTRYPOINT [ "dotnet", "NotificationService.dll" ]
+

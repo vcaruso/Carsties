@@ -1,4 +1,4 @@
-services: 
+services:
   postgres:
     image: postgres
     environment:
@@ -11,14 +11,14 @@ services:
       - /var/lib/postgresql/data
   mongodb:
     image: mongo
-    environment:      
+    environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=mongopw
     ports:
       - 27017:27017
     volumes:
-      #- mongodata:/var/lib/mongodb/data      
-      - /var/lib/mongodb/data      
+      #- mongodata:/var/lib/mongodb/data
+      - /var/lib/mongodb/data
   rabbitmq:
     image: rabbitmq:3-management-alpine
     ports:
@@ -26,7 +26,7 @@ services:
       - 15672:15672
   auction-svc:
     image: trycatch/auction-svc:latest
-    build: 
+    build:
       context: .
       dockerfile: src/AuctionService/Dockerfile
     environment:
@@ -48,7 +48,7 @@ services:
       - rabbitmq
   search-svc:
     image: trycatch/search-svc:latest
-    build: 
+    build:
       context: .
       dockerfile: src/SearchService/Dockerfile
     environment:
@@ -61,10 +61,10 @@ services:
       - 7002:80
     depends_on:
       - mongodb
-      - rabbitmq  
+      - rabbitmq
   identity-svc:
     image: trycatch/identity-svc:latest
-    build: 
+    build:
       context: .
       dockerfile: src/IdentityService/Dockerfile
     environment:
@@ -78,7 +78,7 @@ services:
       - postgres
   gateway-svc:
     image: trycatch/gateway-svc:latest
-    build: 
+    build:
       context: .
       dockerfile: src/GatewayService/Dockerfile
     environment:
@@ -90,7 +90,7 @@ services:
 
   bid-svc:
     image: trycatch/bid-svc:latest
-    build: 
+    build:
       context: .
       dockerfile: src/BiddingService/Dockerfile
     environment:
@@ -104,5 +104,19 @@ services:
       - 7003:80
     depends_on:
       - mongodb
-      - rabbitmq  
+      - rabbitmq
 
+  notify-svc:
+    image: trycatch/notify-svc:latest
+    build:
+      context: .
+      dockerfile: src/NotificationService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+
+    ports:
+      - 7004:80
+    depends_on:
+      - rabbitmq
