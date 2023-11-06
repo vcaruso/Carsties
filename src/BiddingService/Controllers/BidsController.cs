@@ -33,7 +33,7 @@ public class BidsController : ControllerBase
         {
             auction = _grpcClient.GetAuction(auctionId);
             if (auction == null) return BadRequest("Cannot accept bids on this auction at this time");
-           
+
         }
 
         if (auction.Seller == User.Identity.Name)
@@ -62,7 +62,7 @@ public class BidsController : ControllerBase
             {
                 bid.BidStatus = amount > auction.ReservePrice
                     ? BidStatus.Accepted
-                    : BidStatus.AcceptedBelowReseve;
+                    : BidStatus.AcceptedBelowReserve;
             }
 
             if (highBid != null && bid.Amount <= highBid.Amount)

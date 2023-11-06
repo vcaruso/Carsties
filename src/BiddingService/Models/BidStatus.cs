@@ -3,7 +3,7 @@
 public enum BidStatus
 {
     Accepted,
-    AcceptedBelowReseve,
+    AcceptedBelowReserve,
     TooLow,
     Finished
 
