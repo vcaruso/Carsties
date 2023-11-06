@@ -1,4 +1,4 @@
-export type PageResult<T> = {
+export type PagedResult<T> = {
     results: T[],
     pageCount: number,
     totalCount: number
@@ -23,3 +23,11 @@ export type Auction = {
     id: string
   }
   
+  export type Bid = {
+    id: string
+    auctionId: string
+    bidder: string
+    bidTime: string
+    amount: number
+    bidStatus: string
+  }
