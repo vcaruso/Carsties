@@ -1,5 +1,5 @@
->>> Warning
+> > > Warning
 
-The project suppose that in hosts file of your operating system is present the following line:
+If you wish use docker compose you must add the following line to your operating system hosts file:
 
 127.0.0.1 id.carsties.com app.carsties.com api.carsties.com
