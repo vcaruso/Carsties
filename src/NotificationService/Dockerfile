@@ -23,6 +23,7 @@ COPY src/Contracts/Contracts.csproj src/Contracts/Contracts.csproj
 
 COPY src/IdentityService/IdentityService.csproj src/IdentityService/IdentityService.csproj
 
+COPY tests/AuctionService.UnitTests/AuctionService.UnitTests.csproj tests/AuctionService.UnitTests/AuctionService.UnitTests.csproj
 
 
 

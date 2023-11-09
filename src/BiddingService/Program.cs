@@ -2,6 +2,7 @@ using BiddingService;
 using MassTransit;
 using MassTransit.Futures;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
 
@@ -39,8 +40,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters.ValidateAudience = false;
         options.TokenValidationParameters.NameClaimType = "username";
-
-
+        options.Events = new JwtBearerEvents();
+        options.Events.OnAuthenticationFailed = context =>
+        {
+            Console.Error.WriteLine(context.Exception.Message);
+            return Task.CompletedTask;
+        };
     });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

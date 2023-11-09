@@ -9,7 +9,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY frontend/web-app ./
-
+COPY frontend/openssl.cnf openssl.cnf
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npm run build
@@ -32,10 +32,16 @@ COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+COPY --from=builder /app/openssl.cnf /app/openssl.cnf
+
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["node", "server.js"]
+ENV OPENSSL_CONF /app/openssl.cnf
+
+
+
+CMD ["node","server.js"]
