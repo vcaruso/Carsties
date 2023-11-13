@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
+using WebMotions.Fake.Authentication.JwtBearer;
 
 namespace AuctionService.IntegrationTests;
 
@@ -21,25 +22,31 @@ public class CustomWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetim
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureTestServices(services => {
+        builder.ConfigureTestServices(services =>
+        {
 
             services.RemoveDbContext<AuctionDbContext>();
-            
-            services.AddDbContext<AuctionDbContext>(options => {
+
+            services.AddDbContext<AuctionDbContext>(options =>
+            {
                 options.UseNpgsql(_postgreSqlContainer.GetConnectionString());
             });
 
             services.AddMassTransitTestHarness();
 
-            
-            services.EnsureCreated<AuctionDbContext>();
-       
 
+            services.EnsureCreated<AuctionDbContext>();
+
+            services.AddAuthentication(FakeJwtBearerDefaults.AuthenticationScheme)
+            .AddFakeJwtBearer(opt =>
+            {
+                opt.BearerValueType = FakeJwtBearerBearerValueType.Jwt;
+            });
 
         });
 
     }
 
     Task IAsyncLifetime.DisposeAsync() => _postgreSqlContainer.DisposeAsync().AsTask();
-  
+
 }

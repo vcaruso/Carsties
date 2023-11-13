@@ -31,7 +31,7 @@ public class AuctionsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<AuctionDto>>> GetAllAuctions(string date)
     {
-       return await _repo.GetAuctionsAsync(date);
+        return await _repo.GetAuctionsAsync(date);
     }
 
     [HttpGet("{id}")]
@@ -49,7 +49,7 @@ public class AuctionsController : ControllerBase
     public async Task<ActionResult<AuctionDto>> CreateAuction(CreateAuctionDto auctionDto)
     {
         var auction = _mapper.Map<Auction>(auctionDto);
-       
+
         auction.Seller = User.Identity.Name;
 
         _repo.AddAuction(auction);
@@ -57,11 +57,11 @@ public class AuctionsController : ControllerBase
         var newAuction = _mapper.Map<AuctionDto>(auction);
 
         await _publishEndpoint.Publish(_mapper.Map<AuctionCreated>(newAuction));
-        
-        
+
+
         var result = await _repo.SaveChangesAsync();
 
-        
+
 
         if (!result) return BadRequest("Could not save changes to the DB");
 
@@ -77,7 +77,7 @@ public class AuctionsController : ControllerBase
 
         if (auction == null) return NotFound();
 
-        if(auction.Seller != User.Identity.Name) return Forbid();
+        if (auction.Seller != User.Identity.Name) return Forbid();
 
         auction.Item.Make = updateAuctionDto.Make ?? auction.Item.Make;
         auction.Item.Model = updateAuctionDto.Model ?? auction.Item.Model;
@@ -103,10 +103,10 @@ public class AuctionsController : ControllerBase
 
         if (auction == null) return NotFound();
 
-        if(auction.Seller != User.Identity.Name) return Forbid();
+        if (auction.Seller != User.Identity.Name) return Forbid();
 
         _repo.RemoveAuction(auction);
-        await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString()});
+        await _publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
 
         var result = await _repo.SaveChangesAsync();
 

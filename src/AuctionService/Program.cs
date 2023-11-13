@@ -51,7 +51,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters.ValidateAudience = false;
         options.TokenValidationParameters.NameClaimType = "username";
-
+        options.Events = new JwtBearerEvents();
+        options.Events.OnMessageReceived = context => {
+            return Task.CompletedTask;
+        };
+        options.Events.OnTokenValidated = context =>
+        {
+            Console.WriteLine("Token Validated");
+            return Task.CompletedTask;
+        };
+        
 
     });
 
