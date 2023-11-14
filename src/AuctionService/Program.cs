@@ -3,6 +3,8 @@ using AuctionService.Data;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,12 @@ builder.Services.AddMassTransit((x) =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.UseRetry(r =>
+        {
+            r.Handle<RabbitMqConnectionException>();
+            r.Interval(5, TimeSpan.FromSeconds(10));
+        });
+
         cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
         {
 
@@ -52,7 +60,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters.ValidateAudience = false;
         options.TokenValidationParameters.NameClaimType = "username";
         options.Events = new JwtBearerEvents();
-        options.Events.OnMessageReceived = context => {
+        options.Events.OnMessageReceived = context =>
+        {
             return Task.CompletedTask;
         };
         options.Events.OnTokenValidated = context =>
@@ -60,13 +69,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             Console.WriteLine("Token Validated");
             return Task.CompletedTask;
         };
-        
+
 
     });
 
 builder.Services.AddGrpc();
 
-builder.Services.AddScoped<IAuctionRepository,AuctionRepository>();
+builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
 
 var app = builder.Build();
 
@@ -80,15 +89,13 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapGrpcService<GrpcAuctionService>();
 
-try
-{
-    DbInitializer.InitDb(app);
-}
-catch (Exception e)
-{
-    Console.WriteLine(e);
-}
+var retryPolicy = Policy
+    .Handle<NpgsqlException>()
+    .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(10));
+
+retryPolicy.ExecuteAndCapture(() => DbInitializer.InitDb(app));
+
 
 app.Run();
 
-public partial class Program {}
+public partial class Program { }
